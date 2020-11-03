@@ -5,7 +5,7 @@ Created on Tue Nov  3 09:50:26 2020
 @author: straw
 """
 class Maze:
-    def __init__(self, path):
+    def __init__(self, routes):
         self.maze = None
     
     def draw_maze(self):
