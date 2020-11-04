@@ -21,10 +21,14 @@ class Cell:
         self.walls[wall] = False
         next_cell.walls[self.wall_pairs[wall]] = False
 
-#class Maze:
-    #def __init__(self, n):
-        #self.n = n
-        #self.maze = [[True]*(self.n*2+1)]*(self.n*2+1) 
+class Maze:
+    def __init__(self, n):
+        self.size = n*2+1
+        self.entry = (0,0)
+        self.maze = [[Cell((i,j)) for j in range(0,self.size)] for i in range(0, self.size)]
+
+    def find_cell(self, position):
+        return self.maze[position[0]][position[1]]
         
     #def building_maze(self):
         #self.maze[0][0] = False
@@ -34,3 +38,6 @@ class Cell:
                     #pass
                 #else:
                     #print()
+
+m = Maze(3)
+
