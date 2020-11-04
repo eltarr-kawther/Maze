@@ -4,6 +4,7 @@ Created on Tue Nov  3 09:50:26 2020
 
 @author: straw
 """
+import random
 
 class Cell:
     def __init__(self, position):
@@ -24,20 +25,33 @@ class Cell:
 class Maze:
     def __init__(self, n):
         self.size = n*2+1
-        self.entry = (0,0)
+        self.entrance = (0,0)
         self.maze = [[Cell((i,j)) for j in range(0,self.size)] for i in range(0, self.size)]
 
-    def find_cell(self, position):
+    def get_cell(self, position):
         return self.maze[position[0]][position[1]]
         
-    #def building_maze(self):
-        #self.maze[0][0] = False
-        #for i in range(0, len(self.maze)):
-            #for j in range(0, len(self.maze)):
-                #if i == 0 and j == 0:
-                    #pass
-                #else:
-                    #print()
+    def get_neighbours(self, cell):
+        vector = {'N':(-1, 0), 'S':(1, 0), 'E':(0, 1), 'W': (0, -1)}
+        neighbours = []
+        for wall in vector.keys():
+            for (i, j) in vector.values():
+                row, column = cell.position[0] + i, cell.position[1] + j
+                if row >= 0 and row < self.size and column >= 0 and column < self.size:
+                    neighbour = self.get_cell((row, column))
+                    if neighbour.has_all_walls():
+                        neighbours.append((wall, neighbour))
+        if neighbours:
+            next_cell = random.choice(neighbours)
+            return next_cell
+        else:
+            return None
+    
+    def build_maze(self):
+        current_cell = self.get_cell(self.entrance)
+
 
 m = Maze(3)
+next_cell = m.get_neighbours(m.maze[0][0])
+
 
