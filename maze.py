@@ -10,7 +10,11 @@ class Cell:
     def __init__(self, position):
         self.position = position
         self.walls =  {'N': True, 'S': True, 'E': True, 'W': True}
+        self.display = '###\n#.#\n###'
     
+    def  __str__(self):
+        return self.display
+        
     def has_all_walls(self):
         """
         This function checks if a cell has all of it's walls.
@@ -49,10 +53,37 @@ class Cell:
         next_cell.walls[wall_pairs[wall]] = False
 
 class Maze:
-    def __init__(self, n):
+    def __init__(self):
+        n = int(input('Number of maze\'s hallways ? '))
+        #self.filename = input('Maze\'s name ? ')
         self.size = n*2+1
         self.entrance = (0,0)
         self.maze = [[Cell((i,j)) for j in range(0,self.size)] for i in range(0, self.size)]
+        
+    #def __repr__(self):
+        #return {'Size':self.size, 'File name':self.filename}
+        
+    def __str__(self):
+        maze_rows = ['#'*self.size]
+        #for y in range(self.size):
+            #maze_row = ['#']
+            #for x in range(self.size):
+                #if self.maze[x][y].walls['E']:
+                    #maze_row.append('#')
+                #else:
+                    #maze_row.append('.')
+            #maze_rows.append(''.join(maze_row))
+            #maze_row = ['#']
+            #for x in range(self.size):
+                #if self.maze[x][y].walls['S']:
+                    #maze_row.append('#.')
+                #else:
+                    #maze_row.append('.')
+            #maze_rows.append(''.join(maze_row))
+        #for row in self.maze:
+            #for index, item in enumerate(row, start=1):
+                #print(item.display, end=' ' if index % self.size else '\n')
+        return '\n'.join(maze_rows)
 
     def get_cell(self, position):
         """
@@ -122,7 +153,8 @@ class Maze:
             current_cell = next_cell
             visited = visited + 1
 
-maze = Maze(3)
+maze = Maze()
 maze.build_with_RBT()
+print(maze)
 
 
