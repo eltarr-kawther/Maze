@@ -63,14 +63,12 @@ def resolu(maze,x=1,y=0):
 		resolu(maze,x,y)
 	
 
-	print('******************')
 	tab = ''
 	lon = len(maze)
 	aa=list(range(len(maze)+1))
 	for i,l in enumerate(maze):
 		for k,m in enumerate(l):
 			if i == len(maze)-2 and k ==len(maze)-3 :
-				print('aaaaaaaaaaaaaaaaaaaa',i)
 				m ='.'
 				tab += m
 			else:
@@ -78,8 +76,6 @@ def resolu(maze,x=1,y=0):
 			
 		if i in aa:
 			tab += '\n'
-	
-	
 	return tab
 			
 if __name__ == '__main__':
