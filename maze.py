@@ -5,12 +5,12 @@ Created on Tue Nov  3 09:50:26 2020
 @author: straw
 """
 import random
+import numpy as np
 
 class Cell:
     def __init__(self, position):
         self.position = position
         self.walls =  {'N': True, 'S': True, 'E': True, 'W': True}
-        self.display = '###\n#.#\n###'
     
     def  __str__(self):
         return self.display
@@ -48,13 +48,10 @@ class Cell:
         None.
 
         """
-        # Break walls for cell
         wall_pairs = {'N': 'S', 'S': 'N', 'E': 'W', 'W': 'E'}
         self.walls[wall] = False
         next_cell.walls[wall_pairs[wall]] = False
-        # Break walls of display
-        #if self.position:
-            #print()
+
 
 class Maze:
     def __init__(self):
@@ -62,65 +59,149 @@ class Maze:
         #self.filename = input('Maze\'s name ? ')
         self.entrance = (0,0)
         self.maze = [[Cell((i,j)) for j in range(0,self.size)] for i in range(0, self.size)]
-        #self.M, self.display = self.draw()
         
-    #def __repr__(self):
-        #return {'Size':self.size, 'File name':self.filename}
-        
-    def __str__(self):
-        """Return a (crude) string representation of the maze."""
-        maze_rows = ['-' *(self.size)*2]
-        for y in range(self.size):
-            maze_row = ['|']
-            for x in range(self.size):
-                if self.maze[x][y].walls['E']:
-                    maze_row.append(' |')
-                else:
-                    maze_row.append('  ')
-            maze_rows.append(''.join(maze_row))
-            maze_row = ['|']
-            for x in range(self.size):
-                if self.maze[x][y].walls['S']:
-                    maze_row.append('-+')
-                else:
-                    maze_row.append(' +')
-            maze_rows.append(''.join(maze_row))
-        return '\n'.join(maze_rows)
+    def link(self, x, y):     
+        if x % 2 == 0:
+            x = x//self.size
+        else:
+            x = round(x/self.size)
+        if y % 2 == 0:
+            y = y//self.size
+        else:
+            y = round(y/self.size)
+        return x, y
+    
+        # M[i + 1][j] = self.maze[x][y]
+            # for j in range(0, (self.size)*2, 2):
+            #     if i != 0 and i%2 != 0: 
+            #         #print(i, j+2)
+            #         x, y = self.link(i, j+2)
+            #         print(i,j+2,'--->',x,y)
+            #         if self.maze[x][y].walls['E']:
+            #             M[i][j] = M[i][j] + 1
+            #         l.append((i,j+2))
+                    
+            # for j in range(1, (self.size)*2, 2):
+            #     if i != 0 and i%2 == 0:
+            #         #print(i, j)
+            #         x, y = self.link(i, j)
+            #         print(i,j,'--->',x,y)
+            #         l.append((i,j))
 
-    def temp(self):
+        #  if i == 0:
+        #         print('.'+'#'*((self.size)*2))
+            
+        # if i == self.size*2:
+        #     print('#'*((self.size)*2)+'.')        
+    
+    def initmatrice(self):
         M = []
-        for i in list(range(self.size*2)):
-            if i < 1:
-                M.append(list('.'+2*self.size*"#"))
-        return M
-        
-    def draw(self):
-        taille = self.size
-        M =[]
-        for i in list(range(taille*2)):
-            if i < 1:
-                M.append(list('.'+2*taille* "#"))
-            elif i < (2*taille -1) and i%2 != 0:
-                M.append(list('#.'*taille+"#"))
-            elif i < (2*taille -1) and i%2 == 0:
-                M.append(list('#'+ 2*taille*"#"))
+        fulls = (self.size * 2)
+        for i in range(0, fulls):
+             M.append([])
+             for j in range(0, fulls):
+                 M[i].append(0)
+        return (M)
+    
+    def draw2(self):
+        M = np.zeros((self.size*2+1,self.size*2+1), dtype=int).astype(str)
+        for i in range(0, self.size*2+1):
+            if i == 0:
+                M[i][:] = ['.']+['#']*(self.size*2)
             else:
-                M.append(list((2*taille*"#"+'.')))
-    	
-        M.insert(-1, list('#.'*taille+'#'))
-        M[1][0] = '.'
-        M[-2][-1] = '.'
-    	
-        tab = ''
-        lon = len(M)
-        aa=list(range(len(M)+1))
-        for i,l in enumerate(M):
-            for m in l:
-                tab += m
-            if i in aa:
-                tab += '\n'
-        print(tab)
+                for j in range(0, self.size*2, 2):
+                    if i % 2 == 0 and i != 0:
+                        print(i, j+2)
+                        x, y = self.link(i, j+2)
+                        print(i,j+2,'--->',x,y)
+                        if self.maze[x][y].walls['E']:
+                             M[i][j] = '#'
+                        # else:
+                        #     M[i][j] = '.'
+                        # if self.maze[x][y].walls['S']: 
+                        #     M[i][j] = '#'
+                        # else:
+                        #     M[i][j] = '.'
+                            
+        for m in M:
+            print(m)
         
+    def temp(self):
+        M = self.initmatrice()
+        for i in range(0, self.size):
+            for j in range(0, (self.size)):
+                x = i * 2
+                y = j * 2
+                M[x][y] = '.'
+                M[x + 1][y] = self.maze[i][j].walls['E']
+                M[x][y + 1] = self.maze[i][j].walls['S']
+                M[x + 1][y + 1] = True
+        
+        for m in M:
+            print(m)
+            
+        #M = [[0]*((self.size*2)+1)]*((self.size*2)+1)                 
+        #for j in range(0, self.size*2+1):       
+            #for i in range(0, self.size*2+1):
+                #if i == 0:
+                    #print('.#'*((self.size)+1))
+                #if i % 2 == 0 and i != 0:
+                    #print('#'+'.#'*self.size)
+                #if i % 2 != 0 and i != 0:
+                    #x, y = self.link(i, j)
+                    #print(i,j,'---->',x,y)
+                    #print(M)
+                    #print()
+                    #if self.maze[x][y].walls['E']:
+                        #M[i][j] = M[i][j] + 1
+                    #if self.maze[x][y].walls['S']:
+                        #M[i][j] = M[i][j] + 1
+                #else:
+                    #print('#'*((self.size*2)+1))       
+                    
+    def draw(self):
+        M = []
+        for i in range(0, self.size*2+1):
+            if i == 0:
+                #print('.'+'.'+'#'*(((self.size)*2)-1))
+                M.append(list('.'+'.'+'#'*(((self.size)*2)-1)))
+            if i % 2 == 0 and i!=0 and i != self.size*2:
+                #print('#'*((self.size*2)+1))
+                M.append(list('#'*((self.size*2)+1)))
+            if i % 2 != 0 and i!=0:
+                #print('#'+'.#'*self.size)
+                M.append(list('#'+'.#'*self.size))
+            if i == self.size*2-1:
+                #print('#'*(((self.size)*2)-1)+'.'+'.') 
+                M.append(list('#'*(((self.size)*2)-1)+'.'+'.'))
+        
+        # for m in M:
+        #     print(m)
+            
+        return M
+    
+    def update(self):
+        M = self.draw()
+        for i in range(0, self.size):
+            for j in range(0, (self.size)):
+                x = i * 2
+                y = j * 2
+                M[x][y+1] = self.maze[i][j].walls['E']
+                M[x+1][y] = self.maze[i][j].walls['S']
+                #M[x-1][y] = self.maze[i][j].walls['N']
+                #M[x][y-1] = self.maze[i][j].walls['W']
+    
+        # for m in M:
+        #     for e in m:
+        #         if e == True:
+        #             e = '#'
+        #         else:
+        #             e = '.'
+        
+        for m in M:
+            print(m)
+        
+                
     def get_cell(self, position):
         """
         Get cell object from position
@@ -165,7 +246,6 @@ class Maze:
     
     def build_with_RBT(self):
         """
-        
 
         Returns
         -------
@@ -180,7 +260,6 @@ class Maze:
             if not neighbours:
                 current_cell = stack.pop()
                 continue
-            
             wall, next_cell = random.choice(neighbours)
             current_cell.break_wall(next_cell, wall)
             stack.append(current_cell)
@@ -188,16 +267,8 @@ class Maze:
             visited = visited + 1
 
 maze = Maze()
-maze.build_with_RBT()
-#print(maze)
-maze.draw()
+maze.temp()
+#maze.build_with_RBT()
+#maze.update()
+#maze.draw()
 
-########
-#.#.#.#.#
-#..##
-#.#.#..#
-#..#.
-#....#
-##..#
-#.#.#.#.#
-###..
