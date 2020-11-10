@@ -1,7 +1,8 @@
 *.pdf
-*.svg
 ex_maze_solver.py
 ex_maze_solver2.py
 last_hope.py
 sanstitre6.py
 sanstitre8.py
+testing.py
+maze.py
