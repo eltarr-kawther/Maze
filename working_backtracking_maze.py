@@ -5,7 +5,7 @@ Created on Sun Nov  8 16:26:54 2020
 @author: straw
 """
 import random
-import numpy as np
+from itertools import chain
 
 class Cell:
     def __init__(self, position):
@@ -52,7 +52,8 @@ class Cell:
 
 class Maze:
     def __init__(self, size):
-        self.size = size
+        self.size = int(input('Number of maze\'s hallways ? '))
+        self.filename = input('Maze\'s name ? ')
         self.entrance = (0,0)
         self.maze = [[Cell((i,j)) for j in range(0, self.size)] for i in range(0, self.size)]
         
@@ -76,7 +77,7 @@ class Maze:
         
         maze_rows[1] = maze_rows[1].replace('|', ' ', 1)
         maze_rows[len(maze_rows)-2] = maze_rows[len(maze_rows)-2].replace('|', ' ', 1)[::-1]
-
+        
         return '\n'.join(maze_rows)
 
     def get_cell(self, position):
@@ -110,17 +111,17 @@ class Maze:
             DESCRIPTION.
 
         """
-        delta = [('W', (-1, 0)),
-                 ('E', (1, 0)),
-                 ('S', (0, 1)),
-                 ('N', (0, -1))]
+        t_vector = [('W', (-1, 0)),
+                  ('E', (1, 0)),
+                  ('S', (0, 1)),
+                  ('N', (0, -1))]
         neighbours = []
-        for direction, (dx, dy) in delta:
-            x2, y2 = cell.position[0] + dx, cell.position[1] + dy
-            if (0 <= x2 < self.size) and (0 <= y2 < self.size):
-                neighbour = self.get_cell((x2, y2))
+        for wall, (tx, ty) in t_vector:
+            n_x, n_y = cell.position[0] + tx, cell.position[1] + ty
+            if (n_x >= 0 and n_x < self.size) and (n_y >= 0 and n_y < self.size):
+                neighbour = self.get_cell((n_x, n_y))
                 if neighbour.has_all_walls():
-                    neighbours.append((direction, neighbour))
+                    neighbours.append((wall, neighbour))
         return neighbours
     
     def build_with_RBT(self):
@@ -131,7 +132,8 @@ class Maze:
         None.
 
         """
-        current_cell = self.get_cell(self.entrance)
+        #current_cell = self.get_cell(self.entrance)
+        current_cell = random.choice(list(chain(*self.maze)))
         stack = []
         visited = 1
         while visited < self.size*self.size:
@@ -144,10 +146,16 @@ class Maze:
             stack.append(current_cell)
             current_cell = next_cell
             visited = visited + 1
+            
+    def save_file(self):
+        file = open(self.filename, 'w')	
+        file.write(self.__str__())
+        file.close()
     
-maze = Maze(5)
+maze = Maze(10)
 print(maze)
 maze.build_with_RBT()
-print('---------------')
 print(maze)
+maze.save_file()
+
 
