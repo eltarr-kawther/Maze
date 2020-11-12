@@ -5,7 +5,6 @@ Created on Sun Nov  8 16:26:54 2020
 @author: straw
 """
 import random
-from itertools import chain
 
 class Cell:
     def __init__(self, position):
@@ -76,8 +75,8 @@ class Maze:
             maze_rows.append(''.join(maze_row))
         
         maze_rows[1] = maze_rows[1].replace('|', ' ', 1)
-        maze_rows[len(maze_rows)-2] = maze_rows[len(maze_rows)-2].replace('|', ' ', 1)[::-1]
-        
+        #maze_rows[len(maze_rows)-2] = maze_rows[len(maze_rows)-2].replace('|', ' ', 1)[::-1]
+        #maze_rows[len(maze_rows)-2][-1] = ''.join(maze_rows[len(maze_rows)-2].split()[-1])
         return '\n'.join(maze_rows)
 
     def get_cell(self, position):
@@ -132,8 +131,8 @@ class Maze:
         None.
 
         """
-        #current_cell = self.get_cell(self.entrance)
-        current_cell = random.choice(list(chain(*self.maze)))
+        current_cell = self.get_cell(self.entrance)
+        #current_cell = random.choice(list(chain(*self.maze)))
         stack = []
         visited = 1
         while visited < self.size*self.size:
@@ -143,6 +142,8 @@ class Maze:
                 continue
             wall, next_cell = random.choice(neighbours)
             current_cell.break_wall(next_cell, wall)
+            print(self.__str__())
+            input()
             stack.append(current_cell)
             current_cell = next_cell
             visited = visited + 1
