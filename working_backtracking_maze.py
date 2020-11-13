@@ -5,6 +5,8 @@ Created on Sun Nov  8 16:26:54 2020
 @author: straw
 """
 import random
+import time
+import winsound
 
 class Cell:
     def __init__(self, position):
@@ -50,7 +52,7 @@ class Cell:
 
 
 class Maze:
-    def __init__(self, size):
+    def __init__(self):
         self.size = int(input('Number of maze\'s hallways ? '))
         self.filename = input('Maze\'s name ? ')
         self.entrance = (0,0)
@@ -142,21 +144,25 @@ class Maze:
                 continue
             wall, next_cell = random.choice(neighbours)
             current_cell.break_wall(next_cell, wall)
-            print(self.__str__())
-            input()
+            #print(self.__str__())
+            #input()
             stack.append(current_cell)
             current_cell = next_cell
             visited = visited + 1
             
     def save_file(self):
-        file = open(self.filename, 'w')	
+        file = open('{}.txt'.format(self.filename), 'w')	
         file.write(self.__str__())
         file.close()
     
-maze = Maze(10)
-print(maze)
+maze = Maze()
+#print(maze)
+start_time = time.time()
 maze.build_with_RBT()
-print(maze)
-maze.save_file()
+end_time = time.time()
+print("Generating this maze took %s seconds." % (end_time - start_time))
+winsound.Beep(320,700)
+#print(maze)
+#maze.save_file()
 
 
