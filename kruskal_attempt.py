@@ -14,7 +14,6 @@ class Cell:
         self.x = x
         self.y = y
         self.value = None
-        self.hall = None
         self.walls =  {'N': True, 'S': True, 'E': True, 'W': True}
         self.excluded = False
         
@@ -34,8 +33,13 @@ class Cell:
 class Maze:
     def __init__(self, size=3):
         self.size = size
-        self.board = self.create_board
+        self.board = self.create_board()
+        self.placements = []
         self.bag = []
+        # self.halls = {
+        #                 'value' : [i for i in range(self.size*self.size)],
+        #                 'cell': [[None]]*self.size*self.size
+        #               }
         
     def __str__(self):
         maze_rows = ['-' *((self.size*2)+1)]
@@ -60,20 +64,21 @@ class Maze:
         return '\n'.join(maze_rows)
     
     def create_board(self):     
-        board = [[Cell(i,j) for j in range(0,self.size)] for i in range(0, self.size)]
-        
+        board = [[Cell(i,j) for j in range(0, self.size)] for i in range(0, self.size)]
         v = 0
         for cells in board:
             for c in cells:
                 c.value = v
                 v = v + 1
-        return board     
+        return board
     
-    def draw(self):
+    def create_halls(self):
+        placements = []
         for cells in self.board:
             for c in cells:
-                print(c.value)
-                
+                placements.append(((c.x,c.y), c.value))
+        self.placements = placements
+    
     def get_cell(self, x, y):
         return self.board[x][y]
         
@@ -98,11 +103,6 @@ class Maze:
                 if neighbour.value != cell.value:
                     neighbours.append((wall, neighbour))
         return neighbours
-    
-    def spread_sets(self, cell, next_cell):
-        cell.spread_value(next_cell)
-        next_cell
-        
         
     def build_with_Kruskal(self):
         while not self.all_equal():
@@ -113,7 +113,8 @@ class Maze:
                 self.bag.append(current_cell)
             
             else:
-                print(current_cell.x, current_cell.y)
+                self.create_halls()
+                print(self.placements)
                 print(self.__str__())
                 input()
                 wall, next_cell = random.choice(neighbours)
@@ -122,7 +123,6 @@ class Maze:
             
 
 maze = Maze(3)
-#maze.draw()
 maze.build_with_Kruskal()
 print(maze)
 
