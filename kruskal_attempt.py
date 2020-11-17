@@ -33,7 +33,6 @@ class Maze:
         self.size = size
         #self.filename = input('Maze\'s name ? ')
         self.board = self.create_board()
-        self.bag = []
         
     def __str__(self):
         maze_rows = ['-' *((self.size*2)+1)]
@@ -114,11 +113,10 @@ class Maze:
         
     def build_with_Kruskal(self):
         while not self.all_equal():
-            current_cell = random.choice([c for c in list(chain(*self.board)) if c not in self.bag])
+            current_cell = random.choice([c for c in list(chain(*self.board)) if c.excluded == False])
             neighbours = self.get_neighbours(current_cell)
             if not neighbours:
                 current_cell.exclude_cell()
-                self.bag.append(current_cell)    
             else:
                 #print(self.__str__())
                 #input()
@@ -133,7 +131,7 @@ class Maze:
     
     
 if __name__ == '__main__':
-    maze = Maze(80)
+    maze = Maze(3)
     start_time = time.time()
     maze.build_with_Kruskal()
     end_time = time.time()
