@@ -109,8 +109,7 @@ class Maze:
             if (n_x >= 0 and n_x < self.size) and (n_y >= 0 and n_y < self.size):
                 neighbour = self.get_cell(n_x, n_y)
                 if neighbour.value != cell.value:
-                    hall = self.same_value_cells(neighbour.value)
-                    neighbours.append((wall, neighbour, hall))
+                    neighbours.append((wall, neighbour))
         return neighbours
         
     def build_with_Kruskal(self):
@@ -124,12 +123,20 @@ class Maze:
                 #print(self.placements)
                 print(self.__str__())
                 input()
-                wall, next_cell, hall = random.choice(neighbours)
+                wall, next_cell = random.choice(neighbours)
                 current_cell.break_wall(next_cell, wall)
-                current_cell.spread_value(next_cell)
-                for c in hall:
+                print('Current cell is {0} and it\'s value is {1}'.format((current_cell.x, current_cell.y), current_cell.value))
+                print('Next cell is {0} and it\'s value is {1}'.format((next_cell.x, next_cell.y), next_cell.value))
+                minimum = min(current_cell.value, next_cell.value)
+                hall1 = self.same_value_cells(current_cell.value)
+                hall2 = self.same_value_cells(next_cell.value)
+                current_cell.value = minimum
+                next_cell.value = minimum
+                for c in hall1:                    
+                    c.value = minimum
+                for c in hall2:                    
                     print((c.x, c.y), c.value)
-                    c.value = next_cell.value
+                    c.value = minimum
                     
 maze = Maze(3)
 maze.build_with_Kruskal()
