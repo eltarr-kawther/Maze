@@ -8,6 +8,8 @@ import random
 import numpy as np
 from itertools import chain
 from itertools import groupby
+import time
+import winsound
 
 class Cell:
     def __init__(self, x, y):
@@ -16,12 +18,7 @@ class Cell:
         self.value = None
         self.walls =  {'N': True, 'S': True, 'E': True, 'W': True}
         self.excluded = False
-        
-    def spread_value(self, next_cell):
-        v = min(self.value, next_cell.value)
-        next_cell.value = v
-        self.value = v
-        
+                
     def break_wall(self, next_cell, wall):
         wall_pairs = {'N': 'S', 'S': 'N', 'E': 'W', 'W': 'E'}
         self.walls[wall] = False
@@ -31,15 +28,12 @@ class Cell:
         self.excluded = True
 
 class Maze:
-    def __init__(self, size=3):
+    def __init__(self, size):
+        #self.size = int(input('Number of maze\'s hallways ? '))
         self.size = size
+        #self.filename = input('Maze\'s name ? ')
         self.board = self.create_board()
-        #self.placements = []
         self.bag = []
-        # self.halls = {
-        #                 'value' : [i for i in range(self.size*self.size)],
-        #                 'cell': [[None]]*self.size*self.size
-        #               }
         
     def __str__(self):
         maze_rows = ['-' *((self.size*2)+1)]
@@ -47,9 +41,9 @@ class Maze:
             maze_row = ['|']
             for x in range(self.size):
                 if self.board[x][y].walls['E']:
-                    maze_row.append('{}|'.format(self.get_cell(x, y).value))
+                    maze_row.append(' |')
                 else:
-                    maze_row.append('{} '.format(self.get_cell(x, y).value))
+                    maze_row.append('  ')
             maze_rows.append(''.join(maze_row))
             maze_row = ['|']
             for x in range(self.size):
@@ -71,21 +65,6 @@ class Maze:
                 c.value = v
                 v = v + 1
         return board
-    
-    # def update_halls(self):
-    #     placements = []
-    #     for cells in self.board:
-    #         for c in cells:
-    #             placements.append((c, c.value))
-    #     self.placements = placements
-        
-    def same_value_cells(self, value):
-        hall = []
-        for cells in self.board:
-            for c in cells:
-                if c.value == value:
-                    hall.append(c)
-        return hall
     
     def get_cell(self, x, y):
         return self.board[x][y]
@@ -111,6 +90,27 @@ class Maze:
                 if neighbour.value != cell.value:
                     neighbours.append((wall, neighbour))
         return neighbours
+    
+    def same_value_cells(self, value):
+        hall = []
+        for cells in self.board:
+            for c in cells:
+                if c.value == value:
+                    hall.append(c)
+        return hall
+    
+    def spread_values(self, current_cell, next_cell):
+        #print('Current cell is {0} and it\'s value is {1}'.format((current_cell.x, current_cell.y), current_cell.value))
+        #print('Next cell is {0} and it\'s value is {1}'.format((next_cell.x, next_cell.y), next_cell.value))
+        spread = min(current_cell.value, next_cell.value)
+        hall1 = self.same_value_cells(current_cell.value)
+        hall2 = self.same_value_cells(next_cell.value)
+        current_cell.value = spread
+        next_cell.value = spread
+        for c in hall1:                    
+            c.value = spread
+        for c in hall2:
+            c.value = spread
         
     def build_with_Kruskal(self):
         while not self.all_equal():
@@ -120,25 +120,26 @@ class Maze:
                 current_cell.exclude_cell()
                 self.bag.append(current_cell)    
             else:
-                #print(self.placements)
-                print(self.__str__())
-                input()
+                #print(self.__str__())
+                #input()
                 wall, next_cell = random.choice(neighbours)
                 current_cell.break_wall(next_cell, wall)
-                print('Current cell is {0} and it\'s value is {1}'.format((current_cell.x, current_cell.y), current_cell.value))
-                print('Next cell is {0} and it\'s value is {1}'.format((next_cell.x, next_cell.y), next_cell.value))
-                minimum = min(current_cell.value, next_cell.value)
-                hall1 = self.same_value_cells(current_cell.value)
-                hall2 = self.same_value_cells(next_cell.value)
-                current_cell.value = minimum
-                next_cell.value = minimum
-                for c in hall1:                    
-                    c.value = minimum
-                for c in hall2:                    
-                    print((c.x, c.y), c.value)
-                    c.value = minimum
-                    
-maze = Maze(3)
-maze.build_with_Kruskal()
-print(maze)
+                self.spread_values(current_cell, next_cell)
+                
+    # def save_file(self):
+    #     file = open(self.filename, 'w')	
+    #     file.write(self.__str__())
+    #     file.close()
+    
+    
+if __name__ == '__main__':
+    maze = Maze(80)
+    start_time = time.time()
+    maze.build_with_Kruskal()
+    end_time = time.time()
+    time = end_time - start_time
+    print("Generating this maze took %s seconds." % (time))
+    winsound.Beep(320,700)
+    #print(maze)
+    #maze.save_file()
 
