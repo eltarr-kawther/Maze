@@ -34,7 +34,7 @@ class Maze:
     def __init__(self, size=3):
         self.size = size
         self.board = self.create_board()
-        self.placements = []
+        #self.placements = []
         self.bag = []
         # self.halls = {
         #                 'value' : [i for i in range(self.size*self.size)],
@@ -72,12 +72,20 @@ class Maze:
                 v = v + 1
         return board
     
-    def create_halls(self):
-        placements = []
+    # def update_halls(self):
+    #     placements = []
+    #     for cells in self.board:
+    #         for c in cells:
+    #             placements.append((c, c.value))
+    #     self.placements = placements
+        
+    def same_value_cells(self, value):
+        hall = []
         for cells in self.board:
             for c in cells:
-                placements.append(((c.x,c.y), c.value))
-        self.placements = placements
+                if c.value == value:
+                    hall.append(c)
+        return hall
     
     def get_cell(self, x, y):
         return self.board[x][y]
@@ -101,7 +109,8 @@ class Maze:
             if (n_x >= 0 and n_x < self.size) and (n_y >= 0 and n_y < self.size):
                 neighbour = self.get_cell(n_x, n_y)
                 if neighbour.value != cell.value:
-                    neighbours.append((wall, neighbour))
+                    hall = self.same_value_cells(neighbour.value)
+                    neighbours.append((wall, neighbour, hall))
         return neighbours
         
     def build_with_Kruskal(self):
@@ -110,18 +119,18 @@ class Maze:
             neighbours = self.get_neighbours(current_cell)
             if not neighbours:
                 current_cell.exclude_cell()
-                self.bag.append(current_cell)
-            
+                self.bag.append(current_cell)    
             else:
-                self.create_halls()
-                print(self.placements)
+                #print(self.placements)
                 print(self.__str__())
                 input()
-                wall, next_cell = random.choice(neighbours)
+                wall, next_cell, hall = random.choice(neighbours)
                 current_cell.break_wall(next_cell, wall)
                 current_cell.spread_value(next_cell)
-            
-
+                for c in hall:
+                    print((c.x, c.y), c.value)
+                    c.value = next_cell.value
+                    
 maze = Maze(3)
 maze.build_with_Kruskal()
 print(maze)
