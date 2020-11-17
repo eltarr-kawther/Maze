@@ -31,6 +31,7 @@ class Maze:
     def __init__(self, size):
         #self.size = int(input('Number of maze\'s hallways ? '))
         self.size = size
+        self.max_wall = self.size**2-1
         #self.filename = input('Maze\'s name ? ')
         self.board = self.create_board()
         
@@ -40,9 +41,9 @@ class Maze:
             maze_row = ['|']
             for x in range(self.size):
                 if self.board[x][y].walls['E']:
-                    maze_row.append(' |')
+                    maze_row.append('{}|'.format(self.board[x][y].value))
                 else:
-                    maze_row.append('  ')
+                    maze_row.append('{} '.format(self.board[x][y].value))
             maze_rows.append(''.join(maze_row))
             maze_row = ['|']
             for x in range(self.size):
@@ -69,10 +70,7 @@ class Maze:
         return self.board[x][y]
         
     def all_equal(self):
-        values = []
-        for cells in self.board:
-            for c in cells:
-                values.append(c.value)
+        values = [self.board[i][j].value for j in range(0, self.size) for i in range(0, self.size)]
         g = groupby(values)
         return next(g, True) and not next(g, False)
     
@@ -101,18 +99,27 @@ class Maze:
     def spread_values(self, current_cell, next_cell):
         #print('Current cell is {0} and it\'s value is {1}'.format((current_cell.x, current_cell.y), current_cell.value))
         #print('Next cell is {0} and it\'s value is {1}'.format((next_cell.x, next_cell.y), next_cell.value))
-        spread = min(current_cell.value, next_cell.value)
-        hall1 = self.same_value_cells(current_cell.value)
-        hall2 = self.same_value_cells(next_cell.value)
-        current_cell.value = spread
-        next_cell.value = spread
-        for c in hall1:                    
-            c.value = spread
-        for c in hall2:
-            c.value = spread
+        
+        #spread = min(current_cell.value, next_cell.value)
+        
+        if (current_cell.value < next_cell.value):
+            spread = current_cell.value
+            hall2 = self.same_value_cells(next_cell.value)
+            next_cell.value = spread
+            for c in hall2:
+                c.value = spread
+            del hall2
+        else:
+            spread = next_cell.value
+            hall1 = self.same_value_cells(current_cell.value)
+            current_cell.value = spread
+            for c in hall1:
+                c.value = spread
+            del hall1
         
     def build_with_Kruskal(self):
-        while not self.all_equal():
+        n = 0
+        while n < self.max_wall :
             current_cell = random.choice([c for c in list(chain(*self.board)) if c.excluded == False])
             neighbours = self.get_neighbours(current_cell)
             if not neighbours:
@@ -122,6 +129,7 @@ class Maze:
                 #input()
                 wall, next_cell = random.choice(neighbours)
                 current_cell.break_wall(next_cell, wall)
+                n = n + 1
                 self.spread_values(current_cell, next_cell)
                 
     # def save_file(self):
@@ -129,15 +137,16 @@ class Maze:
     #     file.write(self.__str__())
     #     file.close()
     
-    
+ 
 if __name__ == '__main__':
-    maze = Maze(3)
+    maze = Maze(100)
     start_time = time.time()
     maze.build_with_Kruskal()
     end_time = time.time()
     time = end_time - start_time
     print("Generating this maze took %s seconds." % (time))
-    winsound.Beep(320,700)
+    winsound.Beep(320, 700)
     #print(maze)
     #maze.save_file()
+
 
