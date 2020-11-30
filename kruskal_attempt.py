@@ -5,7 +5,6 @@ Created on Tue Nov 10 16:13:29 2020
 @author: straw
 """
 import random
-import numpy as np
 from itertools import chain
 from itertools import groupby
 import time
@@ -29,10 +28,10 @@ class Cell:
 
 class Maze:
     def __init__(self, size):
-        #self.size = int(input('Number of maze\'s hallways ? '))
+        self.size = int(input('Number of maze\'s hallways ? '))
         self.size = size
         self.max_wall = self.size**2-1
-        #self.filename = input('Maze\'s name ? ')
+        self.filename = input('Maze\'s name ? ')
         self.board = self.create_board()
         
     def __str__(self):
@@ -96,12 +95,7 @@ class Maze:
                     hall.append(c)
         return hall
     
-    def spread_values(self, current_cell, next_cell):
-        #print('Current cell is {0} and it\'s value is {1}'.format((current_cell.x, current_cell.y), current_cell.value))
-        #print('Next cell is {0} and it\'s value is {1}'.format((next_cell.x, next_cell.y), next_cell.value))
-        
-        #spread = min(current_cell.value, next_cell.value)
-        
+    def spread_values(self, current_cell, next_cell):        
         if (current_cell.value < next_cell.value):
             spread = current_cell.value
             hall2 = self.same_value_cells(next_cell.value)
@@ -125,28 +119,27 @@ class Maze:
             if not neighbours:
                 current_cell.exclude_cell()
             else:
-                #print(self.__str__())
-                #input()
                 wall, next_cell = random.choice(neighbours)
                 current_cell.break_wall(next_cell, wall)
                 n = n + 1
                 self.spread_values(current_cell, next_cell)
                 
-    # def save_file(self):
-    #     file = open(self.filename, 'w')	
-    #     file.write(self.__str__())
-    #     file.close()
-    
+    def save_file(self):
+        file = open(self.filename, 'w')	
+        file.write(self.__str__())
+        file.close()
  
 if __name__ == '__main__':
-    maze = Maze(100)
+    maze = Maze()
     start_time = time.time()
     maze.build_with_Kruskal()
     end_time = time.time()
     time = end_time - start_time
     print("Generating this maze took %s seconds." % (time))
     winsound.Beep(320, 700)
-    #print(maze)
-    #maze.save_file()
+    print(maze)
+    maze.save_file()
+
+
 
 
