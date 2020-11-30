@@ -125,7 +125,7 @@ class Maze:
                 self.spread_values(current_cell, next_cell)
                 
     def save_file(self):
-        file = open(self.filename, 'w')	
+        file = open('{}.txt'.format(self.filename), 'w')
         file.write(self.__str__())
         file.close()
  
